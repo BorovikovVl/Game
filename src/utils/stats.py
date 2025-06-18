@@ -1,0 +1,15 @@
+class Stats():
+    """отслеживание статистики"""
+
+    def __init__(self):
+        """инициализирует статистику"""
+        self.starship_limit = 3  # Максимальное количество жизней
+        self.reset_stats()
+        self.run_game = True
+        with open('src/utils/the_best_score.txt', 'r') as f:
+            self.best_score = int(f.readline())
+
+    def reset_stats(self):
+        """статистика изменяющаяся во время игры"""
+        self.starship_left = self.starship_limit  # Устанавливаем начальное значение жизней
+        self.score = 0
