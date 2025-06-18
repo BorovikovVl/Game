@@ -34,7 +34,7 @@ class Scores():
         for starship_number in range(self.stats.starship_left):
             starship = Starship(self.screen)
             starship.rect.x = 15 + starship_number * starship.rect.width
-            starship.rect.y = 20
+            starship.rect.y = 690
             self.starships.add(starship)
 
     def show_score(self):
