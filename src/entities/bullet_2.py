@@ -15,7 +15,7 @@ class Bullet_2(pygame.sprite.Sprite):
         if is_boss:
             self.rect.centerx = source.rect.centerx + 105  # Смещение для второй пули
             self.rect.top = source.rect.bottom  # Пуля стартует снизу босса
-        else:  # Предполагаем, что источник — корабль (Starship)
+        else:
             self.rect.centerx = source.rect.centerx + 17
             self.rect.top = source.rect.top
         self.y = float(self.rect.y)

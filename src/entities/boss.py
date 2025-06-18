@@ -5,7 +5,12 @@ import random
 
 class Boss(pygame.sprite.Sprite):
     '''создание босса'''
-    def __init__(self, screen):
+    def __init__(self, screen, damage=1):  # Добавлен параметр damage
+        super().__init__()
+        self.image = pygame.Surface((5, 10))
+        self.image.fill((255, 0, 0))  # Цвет пули босса
+        self.rect = self.image.get_rect()
+        self.damage = damage
         super(Boss).__init__()
         self.screen = screen
         self.screen_rect = screen.get_rect()

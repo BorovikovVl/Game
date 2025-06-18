@@ -184,7 +184,7 @@ class BossManager:
 
     def handle_boss(self, screen, stats, bullets, starship):
         if stats.score >= self.next_spawn_score and self.boss is None:
-            self.boss = Boss(screen)
+            self.boss = Boss(screen, damage=1)
             self.next_spawn_score += self.spawn_threshold
             self.is_active = False
             print("Boss spawned")

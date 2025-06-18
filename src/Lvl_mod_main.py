@@ -66,18 +66,17 @@ class StoryGame:
 
     def load_resources(self):
         print(f"Loading resources with volume: {self.volume}")
-        self.audio.load_music('menu', 'assets/sounds/menu-base.mp3')  # Исправлен путь
+        self.audio.load_music('menu', 'assets/sounds/menu-base.mp3')
         self.audio.load_music('game', 'assets/sounds/pixel.wav')
         self.audio.load_music('click', 'assets/sounds/pixel.wav')
         self.audio.set_volume(self.volume)
-        self.dialog_sound = pygame.mixer.Sound('assets/sounds/8-bit_task.wav')  # Исправлен путь
+        self.dialog_sound = pygame.mixer.Sound('assets/sounds/8-bit_task.wav')
 
     def show_dialog(self, level):
         self.audio.stop_music()
-        print("Stopping music for dialog")
         self.screen.fill((0, 0, 0))
 
-        font = pygame.font.Font("assets/font/PressStart2P-Regular.ttf", 30)  # Исправлен путь
+        font = pygame.font.Font("assets/font/PressStart2P-Regular.ttf", 30)
         if level == 1:
             full_text = "Уничтожь 25 пришельцев! Берегись их шатла!"
         elif level == 2:
@@ -103,11 +102,12 @@ class StoryGame:
 
         for line in lines:
             for i, char in enumerate(line):
-                displayed_text = line[:i + 1]
+                displayed_text = line[:i + 1] # Создаёт подстроку displayed_text, которая включает все символы от начала строки до текущего индекса i
                 text_surface = font.render(displayed_text, True, (255, 255, 255))
                 text_rect = text_surface.get_rect(center=(300, 350 + lines.index(line) * 40))
                 self.screen.fill((0, 0, 0))
-                for j, line_text in enumerate(lines[:lines.index(line) + 1]):
+                for j, line_text in enumerate(lines[:lines.index(line) + 1]):  # цикл итерируется по подмножеству списка lines
+                    # от начала до текущей строки (включительно)
                     if j == lines.index(line):
                         line_surface = font.render(displayed_text, True, (255, 255, 255))
                     else:
@@ -121,7 +121,8 @@ class StoryGame:
                         return 'quit'
                     if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                         self.screen.fill((0, 0, 0))
-                        for j, line_text in enumerate(lines):
+                        for j, line_text in enumerate(lines):  # проходит по каждому символу (char)
+                            # в текущей строке (line) с использованием функции enumerate, которая также предоставляет индекс (i)
                             line_surface = font.render(line_text, True, (255, 255, 255))
                             self.screen.blit(line_surface, (20, 330 + j * 40))
                         pygame.display.flip()
@@ -137,12 +138,10 @@ class StoryGame:
                     return 'quit'
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                     waiting = False
-        print(f"Playing game music after dialog for level {level}")
         self.audio.play_music('game') if self.music_enabled else self.audio.stop_music()
 
     def select_level(self):
         self.audio.stop_music()
-        print("Playing menu music")
         self.audio.play_music('menu') if self.music_enabled else self.audio.stop_music()
         while True:
             self.screen.fill((0, 0, 0))
@@ -166,13 +165,10 @@ class StoryGame:
                         self.current_level = level
                         return 'start'
             elif main_result == 'settings':
-                print(f"Current volume before settings: {self.volume}")
                 self.volume, self.music_enabled, action = self.menu.settings_menu(self.audio, self.volume, self.music_enabled)
-                print(f"Settings returned: volume={self.volume}, music_enabled={self.music_enabled}, action={action}")
                 self.audio.set_volume(self.volume)
                 if self.music_enabled:
                     self.audio.stop_music()
-                    print("Playing menu music after settings")
                     self.audio.play_music('menu')
                 else:
                     self.audio.stop_music()
@@ -217,28 +213,30 @@ class StoryGame:
     def _draw_level_button(self, text, y, level_id):
         mouse_pos = pygame.mouse.get_pos()
         text_surf = pygame.font.Font("assets/font/PressStart2P-Regular.ttf", 36).render(text, True,
-                                                                                        (150, 150, 130) if self._is_hover_level(y, text) else (255, 255, 255))
+                                    (150, 150, 130) if self._is_hover_level(y, text) else (255, 255, 255))
+                                    # Если метод self._is_hover_level(y, text) возвращает True (курсор наведён), используется серый цвет
         text_rect = text_surf.get_rect(center=(300, y))
         button_width = text_rect.width + 80
         button_height = text_rect.height + 20
-        base_x = 300 - button_width // 2
+        base_x = 300 - button_width // 2 # Вычисляет горизонтальную координату левого верхнего угла кнопки (base_x)
         base_y = y - button_height // 2
 
         points = [(base_x + random.randint(-5, 5), base_y + random.randint(-5, 5)),
                   (base_x + button_width + random.randint(-5, 5), base_y + random.randint(-5, 5)),
                   (base_x + button_width + random.randint(-5, 5), base_y + button_height + random.randint(-5, 5)),
                   (base_x + random.randint(-5, 5), base_y + button_height + random.randint(-5, 5))]
+                  # Создаёт список points с четырьмя координатами (углами многоугольника), представляющими границы кнопки
 
-        shadow_points = [(x + 6, y + 6) for x, y in points]
+        shadow_points = [(x + 6, y + 6) for x, y in points] # Определяет позиции для отрисовки тени кнопки
         pygame.draw.polygon(self.screen, (0, 0, 0, 150), shadow_points)
 
-        bevel_points = [(x + 2, y + 2) for x, y in points]
+        bevel_points = [(x + 2, y + 2) for x, y in points] # Определяет позиции для отрисовки скошенных краёв кнопки
         pygame.draw.polygon(self.screen, (200, 200, 200), [bevel_points[0], bevel_points[1], (bevel_points[1][0] - 2, bevel_points[1][1] + 2), (bevel_points[0][0] - 2, bevel_points[0][1] + 2)])
         pygame.draw.polygon(self.screen, (50, 50, 50), [bevel_points[2], bevel_points[3], (bevel_points[3][0] + 2, bevel_points[3][1] - 2), (bevel_points[2][0] + 2, bevel_points[2][1] - 2)])
-
+        # Создаёт светлый и темный скошенный край для 3D-эффекта
         pygame.draw.polygon(self.screen, (100, 100, 120), points, 4)
 
-        inner_points = [(x + 6, y + 6) for x, y in points]
+        inner_points = [(x + 6, y + 6) for x, y in points]  # Определяет внутреннюю область кнопки для градиентного заполнения
         base_color = (77, 77, 77) if level_id > 0 else (255, 0, 0)
         for i in range(4):
             gradient_points = [(inner_points[0][0] + i, inner_points[0][1] + i),
@@ -262,7 +260,7 @@ class StoryGame:
 
     def show_task(self):
         if self.game_state == 'running':
-            current_level_data = levels[self.current_level - 1]  # Исправлено на Levels
+            current_level_data = levels[self.current_level - 1]
             font = pygame.font.SysFont(None, 33)
             if current_level_data.survival_time > 0:
                 elapsed_time = (pygame.time.get_ticks() - self.level_start_time) / 1000
@@ -287,7 +285,6 @@ class StoryGame:
             return 'quit'
 
         self.audio.stop_music()
-        print("Playing game music")
         self.audio.play_music('game') if self.music_enabled else self.audio.stop_music()
         if self.current_level in [1, 2]:
             result = self.show_dialog(self.current_level)
@@ -309,7 +306,6 @@ class StoryGame:
                     result = self.menu.pause_menu()
                     if result == 'menu':
                         self.audio.stop_music()
-                        print("Returning to menu, playing menu music")
                         self.audio.play_music('menu') if self.music_enabled else self.audio.stop_music()
                         return 'menu'
                     elif result == 'quit':
@@ -330,7 +326,6 @@ class StoryGame:
                 result = self._game_over()
                 if result == 'menu':
                     self.audio.stop_music()
-                    print("Game over, playing menu music")
                     self.audio.play_music('menu') if self.music_enabled else self.audio.stop_music()
                     return 'menu'
                 elif result == 'restart':
@@ -349,7 +344,6 @@ class StoryGame:
                 result = self._victory_screen(self.current_level, final_aliens_killed, final_boss_killed, current_level_data.target_aliens, current_level_data.target_boss)
                 if result == 'menu':
                     self.audio.stop_music()
-                    print("Victory, playing menu music")
                     self.audio.play_music('menu') if self.music_enabled else self.audio.stop_music()
                     return 'menu'
                 elif result == 'start' and self.current_level < self.MAX_LEVEL:
@@ -383,16 +377,25 @@ class StoryGame:
             if self.current_level in [2, 3]:
                 self.asteroid_spawn_timer += 1
                 max_asteroids = 40 if self.current_level == 3 else 18
-                if self.asteroid_spawn_timer >= self.asteroid_spawn_delay / 1000 * 60 and len(self.asteroids) < max_asteroids:
+                if self.asteroid_spawn_timer >= self.asteroid_spawn_delay / 1000 * 60 and len(
+                        self.asteroids) < max_asteroids:
                     self.asteroid_spawn_timer = 0
                     controls.create_asteroids(self.screen, self.asteroids, self.boss_manager)
                     self.asteroid_spawn_delay = random.randint(2000, 3000)
 
-        killed = controls.update_bullets(self.screen, self.stats, self.real_score, self.aliens, self.asteroids, self.bullets, self.boss_manager, starship=self.starship)
+        killed = controls.update_bullets(self.screen, self.stats, self.real_score, self.aliens, self.asteroids,
+                                         self.bullets, self.boss_manager, starship=self.starship)
         self.aliens_killed += killed
 
-        controls.update_aliens(self.starship, self.aliens, self.real_score, self.stats, self.screen, self.bullets, self.asteroids, self.boss_manager, aliens_per_level={i + 1: level.aliens_count for i, level in enumerate(levels)}, current_level=self.current_level, speed=self.alien_speed)
-        controls.update_asteroids(self.starship, self.aliens, real_score=self.real_score, stats=self.stats, screen=self.screen, bullets=self.bullets, asteroids=self.asteroids, boss_manager=self.boss_manager, asteroids_per_level={i + 1: level.asteroids_count for i, level in enumerate(levels)}, current_level=self.current_level, speed=self.asteroid_speed)
+        controls.update_aliens(self.starship, self.aliens, self.real_score, self.stats, self.screen, self.bullets,
+                               self.asteroids, self.boss_manager,
+                               aliens_per_level={i + 1: level.aliens_count for i, level in enumerate(levels)},
+                               current_level=self.current_level, speed=self.alien_speed)
+        controls.update_asteroids(self.starship, self.aliens, real_score=self.real_score, stats=self.stats,
+                                  screen=self.screen, bullets=self.bullets, asteroids=self.asteroids,
+                                  boss_manager=self.boss_manager,
+                                  asteroids_per_level={i + 1: level.asteroids_count for i, level in enumerate(levels)},
+                                  current_level=self.current_level, speed=self.asteroid_speed)
         result = self.boss_manager.handle_boss(self.screen, self.stats, self.bullets, self.starship)
         if result == "DEFEATED":
             self.boss_killed += 1
@@ -401,9 +404,23 @@ class StoryGame:
             boss_bullets = Group(self.boss_manager.boss.bullets)
             collisions = pygame.sprite.spritecollide(self.starship, boss_bullets, True)
             if collisions:
-                self.stats.starship_left = self.stats.starship_left - len(collisions) if self.stats.starship_left is not None else 0
+                print(f"Столкновение с пулями босса: {len(collisions)} пуль")
+                total_damage = sum(getattr(bullet, 'damage', 1) for bullet in collisions)  # Урон по умолчанию 1
+                print(f"Общий урон: {total_damage}")
+                if not self.starship.shield_active:
+                    if self.stats.starship_left is not None:
+                        self.stats.starship_left = max(0, self.stats.starship_left - total_damage)
+                        print(f"Осталось жизней: {self.stats.starship_left}")
+                    else:
+                        self.stats.starship_left = 2  # Начальное значение, если None
+                        self.stats.starship_left = max(0, self.stats.starship_left - total_damage)
+                        print(f"Инициализировано здоровье: {self.stats.starship_left}")
+                else:
+                    self.starship.shield_active = False
+                    print("Щит поглотил урон!")
                 if self.stats.starship_left <= 0:
                     self.game_state = 'game_over'
+                    print("Игра окончена из-за урона от босса!")
 
         self._check_level_completion()
 
@@ -445,7 +462,6 @@ class StoryGame:
     def _check_level_completion(self):
         current_level_data = levels[self.current_level - 1]
         elapsed_time = (pygame.time.get_ticks() - self.level_start_time) / 1000
-        print(f"Level {self.current_level}: aliens_killed={self.aliens_killed}/{current_level_data.target_aliens}, boss_killed={self.boss_killed}/{current_level_data.target_boss}, time={elapsed_time}")
         if current_level_data.survival_time > 0:
             if elapsed_time >= current_level_data.survival_time and self.stats.starship_left > 0:
                 self.game_state = 'victory'
@@ -454,28 +470,23 @@ class StoryGame:
 
     def _victory_screen(self, prev_level, final_aliens_killed, final_boss_killed, prev_target_aliens, prev_target_boss):
         self.audio.stop_music()
-        print("Playing menu music in victory screen")
         self.audio.play_music('menu') if self.music_enabled else self.audio.stop_music()
         running = True
-        print(f"Victory screen - prev_level: {prev_level}, final_aliens_killed: {final_aliens_killed}/{prev_target_aliens}, final_boss_killed: {final_boss_killed}/{prev_target_boss}, MAX_LEVEL: {self.MAX_LEVEL}")
 
         while running:
             self.menu.draw_background()
-            title_font = pygame.font.Font("assets/font/PressStart2P-Regular.ttf", 64)
+            title_font = pygame.font.Font("assets/font/PressStart2P-Regular.ttf", 52)
             title = title_font.render("Ты победил!", True, (0, 191, 255))
-            swirl = pygame.font.Font("assets/font/PressStart2P-Regular.ttf", 36).render("~", True, (0, 191, 255))
-            self.screen.blit(title, (250 - title.get_width() // 2, 100))
-            self.screen.blit(swirl, (250 + title.get_width() // 2 - 20, 120))
+            self.screen.blit(title, (0, 100))
 
             menu_rect = self.menu._draw_button("В главное меню", 350, "back")
             if prev_level < self.MAX_LEVEL:
                 next_level_rect = self.menu._draw_button("Следующий уровень", 450, "free")
 
-            font_task = pygame.font.Font("assets/font/PressStart2P-Regular.ttf", 36)
+            font_task = pygame.font.Font("assets/font/PressStart2P-Regular.ttf", 27)
             if levels[prev_level - 1].survival_time > 0:
-                elapsed_time = (pygame.time.get_ticks() - self.level_start_time) / 1000
-                time_text = font_task.render(f"Время выживания: {int(elapsed_time)}/60", True, (255, 255, 255))
-                self.screen.blit(time_text, (250 - time_text.get_width() // 2, 490))
+                time_text = font_task.render(f"Время выживания: 60/60", True, (255, 255, 255))
+                self.screen.blit(time_text, (20, 490))
             else:
                 aliens_text = font_task.render(f"Пришельцы: {min(final_aliens_killed, prev_target_aliens)}/{prev_target_aliens}", True, (255, 255, 255))
                 boss_text = font_task.render(f"Босс: {final_boss_killed}/{prev_target_boss}", True, (255, 255, 255))
@@ -497,7 +508,6 @@ class StoryGame:
 
     def _game_over(self):
         self.audio.stop_music()
-        print("Playing menu music in game over screen")
         self.audio.play_music('menu') if self.music_enabled else self.audio.stop_music()
         running = True
 

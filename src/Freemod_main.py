@@ -26,7 +26,7 @@ class FreeModeGame:
     def __init__(self, screen):
         self.screen = screen
         self.screen_rect = screen.get_rect()
-        self.bg_image = pygame.image.load('assets/image/back-norm.png')  # Исправлен путь
+        self.bg_image = pygame.image.load('assets/image/back-norm.png')
         self.bg_image = pygame.transform.scale(self.bg_image, (600, 800))
         self.stats = Stats()
         self.starship = Starship(screen)
@@ -37,7 +37,7 @@ class FreeModeGame:
         self.real_score = Scores(screen, self.stats)
         self.menu = Menu(screen)
         self.boss_manager = BossManager()
-        self.score = Scores(screen, self.stats)  # Убрано дублирование, если не нужно
+        self.score = Scores(screen, self.stats)
         self.game_over_scr = Game_over(screen)
         self.audio = AudioManager()
         self.load_resources()
@@ -56,9 +56,9 @@ class FreeModeGame:
         self.music_enabled = True
 
     def load_resources(self):
-        self.audio.load_music('menu', 'assets/sounds/menu-base.mp3')  # Исправлен путь
+        self.audio.load_music('menu', 'assets/sounds/menu-base.mp3')
         self.audio.load_music('game', 'assets/sounds/pixel.wav')
-        self.audio.load_music('click', 'assets/sounds/menu.mp3')  # Исправлен путь
+        self.audio.load_music('click', 'assets/sounds/menu.mp3')
         self.audio.set_volume(0.5)
 
     def show_task(self):
